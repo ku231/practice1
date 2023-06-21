@@ -62,6 +62,57 @@ for book in books_list:
     print('File location:', book[3])
     print('---------------------------------------')
 
-# Закрываем соединение с базой данных
+# Функция для удаления книги из базы по ID
+def delete_book(id):
+    cursor.execute('DELETE FROM books WHERE id=?', (id,))
+    conn.commit()
+    print('Книга с ID {} удалена из базы!'.format(id))
+
+# Функция для обновления информации о книге по ID
+def update_book(id, title=None, author=None, year=None, file_path=None):
+    query = 'UPDATE books SET '
+    params = []
+
+# Добавляем поля, которые нужно обновить
+if title is not None:
+  query += 'title=?, '
+  params.append(title)
+if author is not None:
+  query += 'author=?, '
+  params.append(author)
+if year is not None:
+  query += 'year=?, '
+  params.append(year)
+if file_path is not None:
+  query += 'file_path=?, '
+  params.append(file_path)
+
+# Убираем лишнюю запятую в конце запроса
+query = query.rstrip(', ')
+
+query += ' WHERE id=?'
+params.append(id)
+
+cursor.execute(query, tuple(params))
+conn.commit()
+print('Информация о книге с ID {} обновлена!'.format(id))
+
+# Функция для удаления всех книг из базы
+def delete_all_books():
+    cursor.execute('DELETE FROM books')
+    conn.commit()
+    print('Все книги удалены из базы!')
+
+# Примеры использования функций
+add_book('Преступление и наказание', 'Ф.М. Достоевский', 1866, '/books/crime_and_punishment.pdf')
+add_book('Три товарища', 'Э.М. Ремарк', 1936, '/books/three_comrades.pdf')
+add_book('Анна Каренина', 'Л.Н. Толстой', 1877, '/books/anna_karenina.epub')
+
+delete_book(2)
+
+update_book(1, author='Ф.М. Достоевский', year=1865)
+
+delete_all_books()
+
 conn.close()
 ```
